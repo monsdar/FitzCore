@@ -9,6 +9,7 @@
 
 const std::string FRONTENDADDRESS = "tcp://*:21743";
 const std::string BACKENDADDRESS = "tcp://*:21744";
+const std::string envelope = "EasyErgsocket";
 
 int main()
 {
@@ -16,28 +17,20 @@ int main()
     
     zmq::context_t context(1);
     
-    //  Socket facing clients
+    //Socket facing clients
     zmq::socket_t frontend (context, ZMQ_PUB);
     frontend.bind(FRONTENDADDRESS.c_str());
-    std::cout << "Frontend bound to " << FRONTENDADDRESS << std::endl;
+    std::cout << "Frontend bound to " << FRONTENDADDRESS << ", connect SUBs to this port" << std::endl;
 
-    //  Socket facing services
+    //Socket facing services
     zmq::socket_t backend (context, ZMQ_SUB);
     zmq_bind (backend, BACKENDADDRESS.c_str());
-    std::cout << "Backend bound to " << BACKENDADDRESS << std::endl;
+    backend.setsockopt(ZMQ_SUBSCRIBE, envelope.c_str(), envelope.size());
+    std::cout << "Backend bound to " << BACKENDADDRESS << ", connect PUBs to this port" << std::endl;
 
     //  Start built-in device
     std::cout << "Starting forwarder..." << std::endl;
-    zmq_device (ZMQ_FORWARDER, frontend, backend);
+    zmq_device (ZMQ_FORWARDER, frontend, backend); //this is a blocking call...
     
-    std::cout << "Forwarder initialized, this message should never show due to the blocking nature of the zmq_device..." << std::endl;
-/**
-    while (1)
-    {
-        //yield the thread to allow other processes to access the CPU
-        //if we do not do this we would hog the CPU 100%, which is not necessary
-        std::this_thread::yield();
-    }
-**/
     return 0;
 }
