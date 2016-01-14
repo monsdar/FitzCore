@@ -7,6 +7,9 @@
 #include <string>
 #include <thread>
 
+const std::string FRONTENDADDRESS = "tcp://*:21743";
+const std::string BACKENDADDRESS = "tcp://*:21744";
+
 int main()
 {
     std::cout << "Initing network..." << std::endl;
@@ -15,23 +18,26 @@ int main()
     
     //  Socket facing clients
     zmq::socket_t frontend (context, ZMQ_PUB);
-    frontend.bind("tcp://*:21743");
+    frontend.bind(FRONTENDADDRESS.c_str());
+    std::cout << "Frontend bound to " << FRONTENDADDRESS << std::endl;
 
     //  Socket facing services
     zmq::socket_t backend (context, ZMQ_SUB);
-    zmq_bind (backend, "tcp://*:21744");
+    zmq_bind (backend, BACKENDADDRESS.c_str());
+    std::cout << "Backend bound to " << BACKENDADDRESS << std::endl;
 
     //  Start built-in device
+    std::cout << "Starting forwarder..." << std::endl;
     zmq_device (ZMQ_FORWARDER, frontend, backend);
     
-    std::cout << "Forwarder initialized, awaiting connections..." << std::endl;
-
+    std::cout << "Forwarder initialized, this message should never show due to the blocking nature of the zmq_device..." << std::endl;
+/**
     while (1)
     {
         //yield the thread to allow other processes to access the CPU
         //if we do not do this we would hog the CPU 100%, which is not necessary
         std::this_thread::yield();
     }
-
+**/
     return 0;
 }
