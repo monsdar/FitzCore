@@ -1,7 +1,7 @@
 
 //This include needs to be first, else errors about redefinitions in winsock etc appear... 
 //As good as Zmq is... The C++ implementation could use some love :/
-#include <zhelpers.hpp>
+#include "zhelpers.hpp"
 
 #include <iostream>
 #include <string>
@@ -9,7 +9,7 @@
 
 const std::string FRONTENDADDRESS = "tcp://*:21743";
 const std::string BACKENDADDRESS = "tcp://*:21744";
-const std::string envelope = "EasyErgsocket";
+const std::string envelope = "Fitznet";
 
 int main()
 {

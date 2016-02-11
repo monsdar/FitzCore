@@ -1,0 +1,5 @@
+[requires]
+ZMQ/4.1.1@memsharded/testing
+
+[generators]
+cmake
